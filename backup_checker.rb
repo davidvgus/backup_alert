@@ -1,15 +1,58 @@
 
+#backup_checker.rb
+
 class BackupSet
 
-  def initialize(size)
-    @size = size
-    @set_date = ''
-    @set = []
+  attr_accessor :complete, :files, :creation_date
+
+  def initialize()
+    @files = []
+    @creation_date = ""
+    @complete = false
   end
 
-  def self.create_set(file_names)
+  def add_file(filename)
+    @files << filename
+  end
+
+  def add_file_size
+    #
+  end
+
+  def get_creation_date
+    #get the creation date for the .4DR file
+  end
+
+end
+
+class BackupSetCatalog
+
+  def initialize(config_file)
+    @set_date = ''
+    @sets = create_sets(backup_dir)
+  end
+
+  def create_catalog(file_names)
     backup_sets = {}
-    
+
+    file_names.each do |file|
+
+      pattern = /(?<set_number>\d{3})(-\d)?\.4B(?<backup_file_type>[RSK])$/
+
+      #If the file is a backup set file
+      if $~
+
+        if defined? backup_sets[$~[:set_number]]
+          backup_sets[$~[:set_number]].add_file(file)
+        else
+          backup_sets[$~[:set_number]] = BackupSet.new()
+        end
+      end
+    end
+  end
+
+  def set_exists?(set_number)
+
   end
 
   def is_complete?
@@ -36,6 +79,7 @@ class BackupChecker
     @alert_message = ""
     @dir_entries = ''
     @log_file = 'log.txt'
+    @catalog = BackupSetCatalog.new(@backup_dir)
   end
 
   def alert?
