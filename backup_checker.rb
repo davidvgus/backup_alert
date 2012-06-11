@@ -96,7 +96,21 @@ class BackupSetCatalog
   end
 
   def last_backup_complete?
-    #@catalog[get_last_set].is_complete?
+    @catalog[get_last_set].is_complete?
+  end
+
+  def time_since_last_backup(test_time = nil)
+
+    if test_time == nil
+      Time.now.to_i - @catalog[get_last_set].creation_date
+    else
+      test_time - @catalog[get_last_set].creation_date
+    end
+
+  end
+
+  def hours_since_last_complete_backup(test_time = nil)
+    time_since_last_backup(test_time) / (60 * 60)
   end
 
 end
