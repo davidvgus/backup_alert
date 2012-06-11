@@ -1,58 +1,43 @@
-
 #backup_checker.rb
+
+
+class BackupFile
+  attr_accessor :name, :size, :ftype
+
+  def initialize(filename, size, ftype)
+    @name = filename
+    @size = size
+    @ftype = ftype
+  end
+end
 
 class BackupSet
 
-  attr_accessor :complete, :files, :creation_date
+  attr_accessor :complete, :files, :size, :creation_date
 
-  def initialize()
+  def initialize(backup_set, backup_dir, minsize)
+    @set_number = backup_set
+    @backup_dir = backup_dir
     @files = []
-    @creation_date = ""
+    @creation_date = 0
     @complete = false
+    @min_size = minsize
+    @size = 0
+    @ftypes = {"K" => false, "R" => false}
   end
 
-  def add_file(filename)
-    @files << filename
-  end
-
-  def add_file_size
-    #
-  end
-
-  def get_creation_date
-    #get the creation date for the .4DR file
-  end
-
-end
-
-class BackupSetCatalog
-
-  def initialize(config_file)
-    @set_date = ''
-    @sets = create_sets(backup_dir)
-  end
-
-  def create_catalog(file_names)
-    backup_sets = {}
-
-    file_names.each do |file|
-
-      pattern = /(?<set_number>\d{3})(-\d)?\.4B(?<backup_file_type>[RSK])$/
-
-      #If the file is a backup set file
-      if $~
-
-        if defined? backup_sets[$~[:set_number]]
-          backup_sets[$~[:set_number]].add_file(file)
-        else
-          backup_sets[$~[:set_number]] = BackupSet.new()
-        end
-      end
+  def add_file(filename, size, ftype)
+    case ftype
+      when "K"
+        @ftypes[ftype] = true
+      when "R"
+        @ftypes[ftype] = true
+      else
     end
-  end
 
-  def set_exists?(set_number)
-
+    @files << BackupFile.new(filename, size, ftype)
+    @size += size
+    @creation_date = File.ctime(File.join(@backup_dir, filename)).to_i if ftype == "R"
   end
 
   def is_complete?
@@ -60,7 +45,54 @@ class BackupSetCatalog
     #*.4BK
     #*.4BR
     #and is of the minimum kilobyte size
+    @complete = @ftypes["K"] && @ftypes["R"] && min_size_reached? ? true : false
   end
+
+  def min_size_reached?
+    @size >= @min_size ? true : false
+  end
+
+end
+
+class BackupSetCatalog
+
+  attr_accessor :catalog
+
+  def initialize(backup_dir = 'sample', min_size)
+    @catalog = create_catalog(backup_dir, min_size)
+  end
+
+  def create_catalog(backup_dir, min_size)
+    backup_sets = {}
+
+    Dir.entries(backup_dir).each do |file|
+
+      pattern = /(?<set_number>\d{3})(-\d)?\.4B(?<backup_file_type>[RSK])$/
+
+      pattern =~ file
+
+
+      if $~
+
+        set_number = $~[:set_number]
+        file_size = File.size(File.join(backup_dir, file))
+        file_type = $~[:backup_file_type]
+
+        if backup_sets.has_key?(set_number)
+          backup_sets[set_number].add_file(file, file_size, file_type)
+        else
+          backup_sets[set_number] = BackupSet.new(set_number, backup_dir, min_size)
+          backup_sets[set_number].add_file(file, file_size, file_type)
+        end
+      end
+    end
+    backup_sets
+  end
+
+  def list_set_names
+    @catalog.keys
+  end
+
 end
 
 class BackupChecker
@@ -77,7 +109,6 @@ class BackupChecker
     @working_directory = Dir.new(".")
     @current_time = Time.now
     @alert_message = ""
-    @dir_entries = ''
     @log_file = 'log.txt'
     @catalog = BackupSetCatalog.new(@backup_dir)
   end
@@ -94,11 +125,7 @@ class BackupChecker
     #Log what you did for the alert
   end
 
-  def get_dir_entries
-
-  end
-
-  def initialize_set
+  def load_sets
     #
   end
 
