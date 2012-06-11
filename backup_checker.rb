@@ -67,10 +67,9 @@ class BackupSetCatalog
 
     Dir.entries(backup_dir).each do |file|
 
-      pattern = /(?<set_number>\d{3})(-\d)?\.4B(?<backup_file_type>[RSK])$/
+      /(?<set_number>\d{3})(-\d)?\.4B(?<backup_file_type>[RSK])$/ =~ file
 
-      pattern =~ file
-
+      #pattern =~ file
 
       if $~
 
