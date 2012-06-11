@@ -69,10 +69,8 @@ class BackupSetCatalog
 
       /(?<set_number>\d{3})(-\d)?\.4B(?<backup_file_type>[RSK])$/ =~ file
 
-      #pattern =~ file
-
       if $~
-
+        #puts "%s %d" % [$~[:backup_file_type], $~[:set_number]]
         set_number = $~[:set_number]
         file_size = File.size(File.join(backup_dir, file))
         file_type = $~[:backup_file_type]
@@ -92,6 +90,15 @@ class BackupSetCatalog
     @catalog.keys
   end
 
+  def get_last_set
+    inverse_hash = @catalog.inject({}) { |h, (k, v)| h[v.creation_date] = k; h }.reject {|k,v| k == 0}
+    inverse_hash[inverse_hash.keys.sort.last]
+  end
+
+  def last_backup_complete?
+    #@catalog[get_last_set].is_complete?
+  end
+
 end
 
 class BackupChecker
@@ -103,6 +110,7 @@ class BackupChecker
 
   def initialize()
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
+    @backed_up_within = 24 * 60 * 60 #backups must be this old to qualify as
     @minimum_size_in_k = 1
     @backup_dir = @ini_contents['backup_directory']
     @working_directory = Dir.new(".")

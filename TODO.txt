@@ -1,1 +1,5 @@
+Centralize setup info.  Create multiple objects when you have different objects in some tests.
+
 Create rake tasks that will create test files.
+
+Create log file, go through program and add log entries.
