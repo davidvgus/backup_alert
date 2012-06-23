@@ -1,5 +1,8 @@
 require 'minitest/autorun'
-require 'purdytest'
+
+require 'turn/autorun'
+
+
 
 class TestBackupCatalog < MiniTest::Unit::TestCase
   def setup
@@ -35,6 +38,7 @@ class TestBackupCatalog < MiniTest::Unit::TestCase
 
   def test_hours_since_last_complete_backup
     assert_equal 12, @backup_catalog.hours_since_last_complete_backup(1339458718)
+    #assert_equal 12, @backup_catalog.hours_since_last_complete_backup(1)
   end
 
 

@@ -1,5 +1,6 @@
 require 'minitest/autorun'
-require 'purdytest'
+
+
 
 class TestBackupSet < MiniTest::Unit::TestCase
   def setup
@@ -62,6 +63,12 @@ class TestBackupSet < MiniTest::Unit::TestCase
     refute_equal 1339306775, @backup_set.creation_date
   end
 
-
+  def test_info
+    @backup_set = BackupSet.new('666','sample', 100)
+    @backup_set.add_file('test_file.txt', 50, "K")
+    @backup_set.add_file('test_file2.txt', 50, "R")
+    @backup_set.is_complete?
+    assert_equal "666, test_file.txt, test_file2.txt, true, 100", @backup_set.info
+  end
 
 end

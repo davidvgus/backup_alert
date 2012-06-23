@@ -9,6 +9,10 @@ class BackupFile
     @size = size
     @ftype = ftype
   end
+
+  def to_s
+    @name
+  end
 end
 
 class BackupSet
@@ -37,7 +41,7 @@ class BackupSet
 
     @files << BackupFile.new(filename, size, ftype)
     @size += size
-    @creation_date = File.ctime(File.join(@backup_dir, filename)).to_i if ftype == "R"
+    @creation_date = File.mtime(File.join(@backup_dir, filename)).to_i if ftype == "R"
   end
 
   def is_complete?
@@ -50,6 +54,13 @@ class BackupSet
 
   def min_size_reached?
     @size >= @min_size ? true : false
+  end
+
+  def info
+    list_of_names = ""
+    @files.each {|f| list_of_names << "#{f.name}, " }
+    #"666, test_file.txt, test_file2.txt, C, 100"
+    "%s, %s%s, %d" % [@set_number, list_of_names, is_complete?, @size]
   end
 
 end
@@ -90,6 +101,11 @@ class BackupSetCatalog
     @catalog.keys
   end
 
+  def get_ordered_set_keys
+    inverse_hash = @catalog.inject({}) { |h, (k, v)| h[v.creation_date] = k; h }.reject {|k,v| k == 0}
+    inverse_hash.values
+  end
+
   def get_last_set
     inverse_hash = @catalog.inject({}) { |h, (k, v)| h[v.creation_date] = k; h }.reject {|k,v| k == 0}
     inverse_hash[inverse_hash.keys.sort.last]
@@ -102,16 +118,20 @@ class BackupSetCatalog
   def time_since_last_backup(test_time = nil)
 
     if test_time == nil
+      #test_time not used except in a testing.
       Time.now.to_i - @catalog[get_last_set].creation_date
     else
+      #test_time used when testing.
       test_time - @catalog[get_last_set].creation_date
     end
 
   end
 
   def hours_since_last_complete_backup(test_time = nil)
+    #test_time used for testing
     time_since_last_backup(test_time) / (60 * 60)
   end
+
 
 end
 
@@ -120,38 +140,46 @@ class BackupChecker
   require 'inifile'
   require 'date'
 
-  attr_reader :ini_contents
 
-  def initialize()
+  attr_reader :ini_contents, :current_time, :catalog
+
+  def initialize(current_time = nil)
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
-    @backed_up_within = 24 * 60 * 60 #backups must be this old to qualify as
-    @minimum_size_in_k = 1
-    @backup_dir = @ini_contents['backup_directory']
+
+    @current_time = current_time || Time.now
+    @one_day = 24 * 60 * 60
+
+    @alert_message = @ini_contents['alert_message']
+
     @working_directory = Dir.new(".")
-    @current_time = Time.now
-    @alert_message = ""
-    @log_file = 'log.txt'
-    @catalog = BackupSetCatalog.new(@backup_dir)
+    @log_file_full_path = File.join(Dir.new("."), @ini_contents['log_file_name'])
+
+    @minimum_size_in_k = @ini_contents['min_size'].to_i
+    @backup_dir = @ini_contents['backup_directory']
+    @catalog = BackupSetCatalog.new(@backup_dir, @minimum_size_in_k)
   end
 
-  def alert?
-    #
+  def alert?(test_time = nil)
+
+    if test_time
+      @catalog.last_backup_complete? && @catalog.hours_since_last_complete_backup(test_time) > 24
+      #@catalog.hours_since_last_complete_backup(1339415518) < 24
+    else
+      @catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup > 24
+      #@catalog.hours_since_last_complete_backup < 24
+    end
   end
 
-  def check
-    #log
+  def complete?
+    @catalog.last_backup_complete?
   end
 
-  def do_alert
-    #Log what you did for the alert
-  end
-
-  def load_sets
-    #
-  end
-
-  def log_write
-    #
+  def report
+    @catalog.get_ordered_set_keys.each do |key|
+      puts @catalog.catalog[key].info
+    end
   end
 
 end
+
+
