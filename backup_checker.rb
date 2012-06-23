@@ -56,11 +56,16 @@ class BackupSet
     @size >= @min_size ? true : false
   end
 
-  def info
-    list_of_names = ""
-    @files.each {|f| list_of_names << "#{f.name}, " }
+  def info(files_column_width, size_column_width)
+    list_of_names = []
+    @files.each {|f| list_of_names << "#{f.name}" }
     #"666, test_file.txt, test_file2.txt, C, 100"
-    "%s, %s%s, %d" % [@set_number, list_of_names, is_complete?, @size]
+    status = is_complete? ? 'Complete' : 'Incomplete'
+    date =  Time.at(@creation_date)
+    size = (@size/(1024 * 1024)).to_s
+    size = "<1" if size == "0"
+    "Set:%s  Files:  % -#{files_column_width }s Status: % -10s  Size: % #{size_column_width}sMB  Date: %s" %
+        [@set_number, list_of_names.join(', '), status, size, date]
   end
 
 end
@@ -146,6 +151,10 @@ class BackupChecker
   def initialize(current_time = nil)
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
 
+
+    @files_column_width = @ini_contents['files_column_width'].to_i
+    @size_column_width = @ini_contents['size_column_width'].to_i
+
     @current_time = current_time || Time.now
     @one_day = 24 * 60 * 60
 
@@ -176,7 +185,7 @@ class BackupChecker
 
   def report
     @catalog.get_ordered_set_keys.each do |key|
-      puts @catalog.catalog[key].info
+      puts @catalog.catalog[key].info(@files_column_width, @size_column_width)
     end
   end
 
