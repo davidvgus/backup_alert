@@ -17,9 +17,7 @@ task :create_sample_files, :test_dir do |t, arg|
       f.write("a" * $~[:size].to_i)
     end
     FileUtils.touch File.join(sample_dir_name, $~[:name]), {:mtime => $~[:mtime].to_i}
- end
+  end
+
 end
 
-task :hello do
-  puts "hello"
-end
