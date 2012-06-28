@@ -68,7 +68,7 @@ class TestBackupSet < MiniTest::Unit::TestCase
     @backup_set.add_file('test_file.txt', 50, "K")
     @backup_set.add_file('test_file2.txt', 50, "R")
     @backup_set.is_complete?
-    assert_equal "Set:666  Files:  test_file.txt, test_file2.txt                           Status: Complete    Size:         <1MB  Date: 2012-06-09 22:39:35 -0700", @backup_set.info(55,10)
+    assert_equal "\nSet:666  Files:  test_file.txt, test_file2.txt                           \n\t Status: Complete    \n\t Size:         <1MB  \n\t Date: 2012-06-09 22:39:35 -0700", @backup_set.info(55,10)
 
 
   end

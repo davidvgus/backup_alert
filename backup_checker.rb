@@ -64,7 +64,7 @@ class BackupSet
     date =  Time.at(@creation_date)
     size = (@size/(1024 * 1024)).to_s
     size = "<1" if size == "0"
-    "Set:%s  Files:  % -#{files_column_width }s Status: % -10s  Size: % #{size_column_width}sMB  Date: %s" %
+    "\nSet:%s  Files:  % -#{files_column_width }s \n\t Status: % -10s  \n\t Size: % #{size_column_width}sMB  \n\t Date: %s" %
         [@set_number, list_of_names.join(', '), status, size, date]
   end
 
