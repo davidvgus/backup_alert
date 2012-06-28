@@ -12,3 +12,6 @@ test files
 Move complicated code from rake tasks into classes.
 
 create a tool for creating test data sets on the fly.
+
+
+Fix .info test

@@ -62,9 +62,9 @@ class BackupSet
     #"666, test_file.txt, test_file2.txt, C, 100"
     status = is_complete? ? 'Complete' : 'Incomplete'
     date =  Time.at(@creation_date)
-    size = (@size/(1024 * 1024)).to_s
-    size = "<1" if size == "0"
-    "\nSet:%s  Files:  % -#{files_column_width }s \n\t Status: % -10s  \n\t Size: % #{size_column_width}sMB  \n\t Date: %s" %
+    size = (@size/(1024 * 1024)).to_s + "MB"
+    size = "<1MB" if size == "0MB"
+    "\nSet:%s  Files:  % -#{files_column_width }s \n\t Status: % -10s  \n\t Size:   % -#{size_column_width}s\n\t Date:   %s" %
         [@set_number, list_of_names.join(', '), status, size, date]
   end
 
@@ -184,9 +184,11 @@ class BackupChecker
   end
 
   def report
+    report_string = ""
     @catalog.get_ordered_set_keys.each do |key|
-      puts @catalog.catalog[key].info(@files_column_width, @size_column_width)
+      report_string << @catalog.catalog[key].info(@files_column_width, @size_column_width)
     end
+    report_string
   end
 
 end
