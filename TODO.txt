@@ -15,3 +15,19 @@ create a tool for creating test data sets on the fly.
 
 
 Fix .info test
+
+
+The below needs removed from BackupSetCatalog and moved elsewhere so that all reporting can be handled centrally.
+
+    unless File.directory?(backup_dir)
+      email_config = File.join(Dir.home, "authinfo.txt")
+      report = "The Backup Directory (#{File.absolute_path(backup_dir)}) Does not exist."
+      puts report
+
+      mailer = EmailAlerter.new()
+      mailer.send_report(email_config, report)
+      exit()
+    end
+
+
+The location of the auth file should be in the ini file.

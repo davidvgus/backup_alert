@@ -16,7 +16,6 @@ if b.catalog.empty?
 
   mailer = EmailAlerter.new()
   mailer.send_report(email_config, report)
-
 else
   report = b.report
   puts report

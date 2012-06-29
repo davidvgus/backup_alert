@@ -81,6 +81,16 @@ class BackupSetCatalog
   def create_catalog(backup_dir, min_size)
     backup_sets = {}
 
+    unless File.directory?(backup_dir)
+      email_config = File.join(Dir.home, "authinfo.txt")
+      report = "The Backup Directory (#{File.absolute_path(backup_dir)}) Does not exist."
+      puts report
+
+      mailer = EmailAlerter.new()
+      mailer.send_report(email_config, report)
+      exit()
+    end
+
     Dir.entries(backup_dir).each do |file|
 
       /(?<set_number>\d{3})(-\d)?\.4B(?<backup_file_type>[RSK])$/ =~ file
@@ -182,6 +192,10 @@ class BackupChecker
       @catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup > 24
       #@catalog.hours_since_last_complete_backup < 24
     end
+  end
+
+  def backup_dir_exists?
+    File.directory?(@backup_dir)
   end
 
   def complete?
