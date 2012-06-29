@@ -6,7 +6,7 @@ require_relative 'backup_checker'
 
 
 
-email_config = File.join(Dir.home, ".authinfo.txt")
+email_config = File.join(Dir.home, "authinfo.txt")
 
 b = BackupChecker.new()
 
