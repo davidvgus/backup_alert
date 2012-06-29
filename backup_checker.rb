@@ -117,7 +117,7 @@ class BackupSetCatalog
   end
 
   def last_backup_complete?
-    @catalog[get_last_set].is_complete?
+    @catalog[get_last_set].is_complete? if @catalog
   end
 
   def time_since_last_backup(test_time = nil)
