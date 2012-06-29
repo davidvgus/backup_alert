@@ -117,6 +117,7 @@ class BackupSetCatalog
   end
 
   def last_backup_complete?
+    #turn this into an if statement so that you do something useful if there is no catalog
     @catalog[get_last_set].is_complete? if @catalog
   end
 
@@ -137,6 +138,10 @@ class BackupSetCatalog
     time_since_last_backup(test_time) / (60 * 60)
   end
 
+  def empty?
+    @catalog.empty?
+  end
+
 
 end
 
@@ -146,7 +151,7 @@ class BackupChecker
   require 'date'
 
 
-  attr_reader :ini_contents, :current_time, :catalog
+  attr_reader :ini_contents, :current_time, :catalog, :backup_dir
 
   def initialize(current_time = nil)
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
