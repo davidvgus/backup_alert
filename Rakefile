@@ -5,7 +5,7 @@ Rake::TestTask.new do |t|
   t.verbose = true
 end
 
-
+#rake create_sample_files[sample]
 task :create_sample_files, :test_dir do |t, arg|
   #File.open(File.join('sample_file_info.txt'), r)
   x = File.open('sample_file_info.txt', 'r'){|f| f.readlines}
