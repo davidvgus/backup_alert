@@ -222,3 +222,35 @@ EOF
 end
 
 
+class EmailAlerter
+  require 'net/smtp'
+  require 'time'
+  require 'parseconfig'
+
+
+  def send_report(email_config, report)
+    email_config = ParseConfig.new(email_config).params
+    from = email_config['from_address']
+    to = email_config['to_address']
+    server = email_config['server']
+    message = <<MESSAGE_END
+From: Site of Care Backup_Checker <#{from}>
+To: IT<#{to}>
+Subject:  SoC Backup Needs Attention
+Date: #{Time.now.rfc2822}
+
+Begin Report:
+MESSAGE_END
+
+    message << report
+
+    Net::SMTP.start(server) do |smtp|
+      smtp.send_message message, from,
+                        to
+    end
+  end
+end
+
+
+
+

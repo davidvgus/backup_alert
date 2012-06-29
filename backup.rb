@@ -15,7 +15,8 @@ report = b.report
 puts report
 
 if b.alert?
-  gm = Gmailer.new()
-  gm.send_report(email_config, report)
+  mailer = EmailAlerter.new()
+  #mailer.send_report(email_config, report)
+  mailer.send_report(email_config, report)
 end
 
