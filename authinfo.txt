@@ -1,0 +1,6 @@
+#authinfo.txt
+#This is an example authinfo.txt
+
+from_address = test@fromtest.com
+to_address = to@to@test.com
+p = 'somepassword'
