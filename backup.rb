@@ -11,7 +11,7 @@ email_config = File.join(Dir.home, "authinfo.txt")
 b = BackupChecker.new()
 
 if b.catalog.empty?
-  report = "The Backup Directory (#{File.absolute_path(b.backup_dir)}) is empty of valid back files."
+  report = "The Backup Directory (#{File.absolute_path(b.backup_dir)}) is empty of valid backup files."
   puts report
 
   mailer = EmailAlerter.new()

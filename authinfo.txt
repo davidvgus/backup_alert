@@ -3,4 +3,5 @@
 
 from_address = test@fromtest.com
 to_address = to@to@test.com
+server = mailserver.com
 p = 'somepassword'

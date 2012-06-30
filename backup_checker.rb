@@ -62,10 +62,11 @@ class BackupSet
     #"666, test_file.txt, test_file2.txt, C, 100"
     status = is_complete? ? 'Complete' : 'Incomplete'
     date =  Time.at(@creation_date)
+    elapsed_time = (Time.now - date).to_i / (60 * 60)
     size = (@size/(1024 * 1024)).to_s + "MB"
     size = "<1MB" if size == "0MB"
-    "\nSet:%s  Files:  % -#{files_column_width }s \n\t Status: % -10s  \n\t Size:   % -#{size_column_width}s\n\t Date:   %s" %
-        [@set_number, list_of_names.join(', '), status, size, date]
+    "\nSet:%s  Files:  % -#{files_column_width }s \n\t Status: % -10s  \n\t Size:   % -#{size_column_width}s\n\t Date:   %s\n\t Age in Hours: %s" %
+        [@set_number, list_of_names.join(', '), status, size, date, elapsed_time]
   end
 
 end
