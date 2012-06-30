@@ -187,10 +187,11 @@ class BackupChecker
   def alert?(test_time = nil)
 
     if test_time
-      @catalog.last_backup_complete? && @catalog.hours_since_last_complete_backup(test_time) > 24
+      !@catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup(test_time) > 24
+      #!@catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup > 24
       #@catalog.hours_since_last_complete_backup(1339415518) < 24
     else
-      @catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup > 24
+      !@catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup > 24
       #@catalog.hours_since_last_complete_backup < 24
     end
   end
