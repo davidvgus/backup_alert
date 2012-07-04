@@ -1,6 +1,7 @@
 #example.rb
 
 require_relative 'backup_checker'
+require 'inifile'
 
 
 

@@ -1,22 +1,15 @@
-1. The location of the auth file should be in the ini file.
+Have the script create the ini and email config sample files.
 
 
 Centralize setup info.  Create multiple objects when you have different objects in some tests.
 
-Create rake tasks that will create test files.
 
 Create log file, go through program and add log entries.
 
-regex for grabbing lines from sample file info for a rake task to create
-test files
-
-/^name:\s+(?<name>\w+\.\w{3})\s\| mtime: (?<mtime>\d+) size:\s+(?<size>\d+)$/
-
-Move complicated code from rake tasks into classes.
 
 create a tool for creating test data sets on the fly.
 
-Have the script create the ini and email files.
+
 
 Fix .info test
 
@@ -35,3 +28,6 @@ The below needs removed from BackupSetCatalog and moved elsewhere so that all re
 
 
 The location of the auth file should be in the ini file.
+
+
+Move complicated code from rake tasks into classes.
