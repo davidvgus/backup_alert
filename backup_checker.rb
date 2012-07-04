@@ -51,7 +51,7 @@ class BackupSet
     if is_complete?
       "Backup Set #{@set_number} is complete"
     else
-      description = "Backup Set #{@set_number} Problems : "
+      description = "Backup Set #{@set_number} Has Problems : "
       unless @ftypes["R"]
         description << "No backup resource file. "
       end
