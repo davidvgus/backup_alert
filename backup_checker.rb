@@ -1,5 +1,7 @@
 #backup_checker.rb
 
+require 'inifile'
+
 
 class BackupFile
   attr_accessor :name, :size, :ftype
@@ -113,7 +115,8 @@ class BackupSetCatalog
     backup_sets = {}
 
     unless File.directory?(backup_dir)
-      email_config = File.join(Dir.home, "authinfo.txt")
+      #email_config = File.join(Dir.home, "authinfo.txt")
+      email_config = IniFile.new('backup_checker.ini').to_h['global']['email_config_file']
       report = "The Backup Directory (#{File.absolute_path(backup_dir)}) Does not exist."
       puts report
 
