@@ -44,6 +44,30 @@ class BackupSet
     @creation_date = File.mtime(File.join(@backup_dir, filename)).to_i if ftype == "R"
   end
 
+  def describe_set_state
+
+    description = "Problems: "
+
+    if is_complete?
+      "The set is complete"
+    else
+      unless @ftypes["R"]
+        description << "No backup resource file. "
+      end
+
+      unless @ftypes["K"]
+        description << "No initial backup data file. "
+      end
+
+      unless min_size_reached?
+        description << "Minimum file size not reached."
+      end
+
+      description
+    end
+
+  end
+
   def is_complete?
     # A set is complete if it has at least one:
     #*.4BK
@@ -153,6 +177,10 @@ class BackupSetCatalog
     @catalog.empty?
   end
 
+  def describe_set_state
+    @catalog[get_last_set].describe_set_state
+  end
+
 
 end
 
@@ -162,7 +190,7 @@ class BackupChecker
   require 'date'
 
 
-  attr_reader :ini_contents, :current_time, :catalog, :backup_dir
+  attr_reader :ini_contents, :current_time, :set_manager, :backup_dir
 
   def initialize(current_time = nil)
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
@@ -181,15 +209,15 @@ class BackupChecker
 
     @minimum_size_in_k = @ini_contents['min_size'].to_i
     @backup_dir = @ini_contents['backup_directory']
-    @catalog = BackupSetCatalog.new(@backup_dir, @minimum_size_in_k)
+    @set_manager = BackupSetCatalog.new(@backup_dir, @minimum_size_in_k)
   end
 
   def alert?(test_time = nil)
 
     if test_time
-      !@catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup(test_time) > 24
+      !@set_manager.last_backup_complete? || @set_manager.hours_since_last_complete_backup(test_time) > 24
     else
-      !@catalog.last_backup_complete? || @catalog.hours_since_last_complete_backup > 24
+      !@set_manager.last_backup_complete? || @set_manager.hours_since_last_complete_backup > 24
     end
   end
 
@@ -198,13 +226,15 @@ class BackupChecker
   end
 
   def complete?
-    @catalog.last_backup_complete?
+    @set_manager.last_backup_complete?
   end
 
   def report
     report_string = ""
-    @catalog.get_ordered_set_keys.each do |key|
-      report_string << @catalog.catalog[key].info(@files_column_width, @size_column_width)
+    # set first line to describe_set_state
+    report_string << @set_manager.describe_set_state << "\n"
+    @set_manager.get_ordered_set_keys.each do |key|
+      report_string << @set_manager.catalog[key].info(@files_column_width, @size_column_width)
     end
     report_string
   end
