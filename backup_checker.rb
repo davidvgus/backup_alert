@@ -46,11 +46,10 @@ class BackupSet
 
   def describe_set_state
 
-    description = "Problems: "
-
     if is_complete?
-      "The set is complete"
+      "Backup Set #{@set_number} is complete"
     else
+      description = "Backup Set #{@set_number} Problems : "
       unless @ftypes["R"]
         description << "No backup resource file. "
       end
@@ -62,7 +61,6 @@ class BackupSet
       unless min_size_reached?
         description << "Minimum file size not reached."
       end
-
       description
     end
 
@@ -80,13 +78,21 @@ class BackupSet
     @size >= @min_size ? true : false
   end
 
+  def hours_old
+    date =  Time.at(@creation_date)
+    elapsed_time = (Time.now - date).to_i / (60 * 60)
+  end
+
   def info(files_column_width, size_column_width)
     list_of_names = []
     @files.each {|f| list_of_names << "#{f.name}" }
     #"666, test_file.txt, test_file2.txt, C, 100"
     status = is_complete? ? 'Complete' : 'Incomplete'
+
     date =  Time.at(@creation_date)
-    elapsed_time = (Time.now - date).to_i / (60 * 60)
+    #elapsed_time = (Time.now - date).to_i / (60 * 60)
+    elapsed_time = hours_old
+
     size = (@size/(1024 * 1024)).to_s + "MB"
     size = "<1MB" if size == "0MB"
     "\nSet:%s  Files:  % -#{files_column_width }s \n\t Status: % -10s  \n\t Size:   % -#{size_column_width}s\n\t Date:   %s\n\t Age in Hours: %s" %
@@ -177,8 +183,12 @@ class BackupSetCatalog
     @catalog.empty?
   end
 
-  def describe_set_state
+  def describe_last_set_state
     @catalog[get_last_set].describe_set_state
+  end
+
+  def last_set_age_in_hours
+    @catalog[get_last_set].hours_old
   end
 
 
@@ -230,9 +240,11 @@ class BackupChecker
   end
 
   def report
+
     report_string = ""
     # set first line to describe_set_state
-    report_string << @set_manager.describe_set_state << "\n"
+    report_string << @set_manager.describe_last_set_state << "\n"
+    report_string << "Set age in hours: " << @set_manager.last_set_age_in_hours.to_s << "\n"
     @set_manager.get_ordered_set_keys.each do |key|
       report_string << @set_manager.catalog[key].info(@files_column_width, @size_column_width)
     end
