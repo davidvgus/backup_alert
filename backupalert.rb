@@ -14,9 +14,9 @@ mailer = EmailAlerter.new()
 
 #email_config = File.join(Dir.home, "authinfo.txt")
 
-puts "\n"
-puts ini_contents = IniFile.new('backup_checker.ini').to_h['global']['email_config_file']
-puts "\n"
+#puts "\n"
+#puts ini_contents = IniFile.new('backup_checker.ini').to_h['global']['email_config_file']
+#puts "\n"
 email_config = IniFile.new('backup_checker.ini').to_h['global']['email_config_file']
 
 if b.set_manager.empty?
