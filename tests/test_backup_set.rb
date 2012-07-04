@@ -82,28 +82,28 @@ class TestBackupSet < MiniTest::Unit::TestCase
     @backup_set = BackupSet.new('666','sample', 50)
     @backup_set.add_file('test_file.txt', 50, "K")
     #@backup_set.add_file('test_file2.txt', 50, "R")
-    assert_equal "Backup Set 666 Problems : No backup resource file. ", @backup_set.describe_set_state
+    assert_equal "Backup Set 666 Has Problems : No backup resource file. ", @backup_set.describe_set_state
   end
 
   def test_describe_set_state_when_no_backup_file_present
     @backup_set = BackupSet.new('666','sample', 50)
     #@backup_set.add_file('test_file.txt', 50, "K")
     @backup_set.add_file('test_file2.txt', 50, "R")
-    assert_equal "Backup Set 666 Problems : No initial backup data file. ", @backup_set.describe_set_state
+    assert_equal "Backup Set 666 Has Problems : No initial backup data file. ", @backup_set.describe_set_state
   end
 
   def test_describe_set_state_when_backup_size_too_small
     @backup_set = BackupSet.new('666','sample', 110)
     @backup_set.add_file('test_file.txt', 50, "K")
     @backup_set.add_file('test_file2.txt', 50, "R")
-    assert_equal "Backup Set 666 Problems : Minimum file size not reached.", @backup_set.describe_set_state
+    assert_equal "Backup Set 666 Has Problems : Minimum file size not reached.", @backup_set.describe_set_state
   end
 
   def test_describe_set_state_when_no_requirements_met
     @backup_set = BackupSet.new('666','sample', 110)
     #@backup_set.add_file('test_file.txt', 50, "K")
     #@backup_set.add_file('test_file2.txt', 50, "R")
-    assert_equal "Backup Set 666 Problems : No backup resource file. No initial backup data file. Minimum file size not reached.", @backup_set.describe_set_state
+    assert_equal "Backup Set 666 Has Problems : No backup resource file. No initial backup data file. Minimum file size not reached.", @backup_set.describe_set_state
   end
 
 
