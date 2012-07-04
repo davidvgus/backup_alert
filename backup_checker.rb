@@ -1,6 +1,10 @@
 #backup_checker.rb
 
 require 'inifile'
+require 'logger'
+
+LOG = Logger.new( 'log.txt', 'monthly' )
+
 
 
 class BackupFile
@@ -97,7 +101,7 @@ class BackupSet
 
     size = (@size/(1024 * 1024)).to_s + "MB"
     size = "<1MB" if size == "0MB"
-    "\nSet:%s  Files:  % -#{files_column_width }s \n\t Status: % -10s  \n\t Size:   % -#{size_column_width}s\n\t Date:   %s\n\t Age in Hours: %s" %
+    "\nSet:%s   Files:  % -#{files_column_width }s \n\t Status:  % -10s  \n\t   Size:  % -#{size_column_width}s\n\t   Date:  %s\n   Age in Hours:  %s\n" %
         [@set_number, list_of_names.join(', '), status, size, date, elapsed_time]
   end
 
@@ -206,6 +210,9 @@ class BackupChecker
   attr_reader :ini_contents, :current_time, :set_manager, :backup_dir
 
   def initialize(current_time = nil)
+
+    LOG.level = Logger::DEBUG
+
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
 
 
@@ -247,7 +254,8 @@ class BackupChecker
     report_string = ""
     # set first line to describe_set_state
     report_string << @set_manager.describe_last_set_state << "\n"
-    report_string << "Set age in hours: " << @set_manager.last_set_age_in_hours.to_s << "\n"
+    report_string << "Age of set in hours: " << @set_manager.last_set_age_in_hours.to_s << "\n"
+    report_string << "\n        LIST OF KNOWN BACKUP SETS        \n"
     @set_manager.get_ordered_set_keys.each do |key|
       report_string << @set_manager.catalog[key].info(@files_column_width, @size_column_width)
     end
