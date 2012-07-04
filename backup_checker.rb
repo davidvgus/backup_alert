@@ -3,7 +3,7 @@
 require 'inifile'
 require 'logger'
 
-LOG = Logger.new( 'log.txt', 'monthly' )
+LOG = Logger.new( 'backupalert.log', 'monthly' )
 
 
 
@@ -214,6 +214,8 @@ class BackupChecker
     LOG.level = Logger::DEBUG
 
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
+    
+    LOG.debug "ini_contents = " << @ini_contents.to_s
 
 
     @files_column_width = @ini_contents['files_column_width'].to_i
@@ -259,6 +261,7 @@ class BackupChecker
     @set_manager.get_ordered_set_keys.each do |key|
       report_string << @set_manager.catalog[key].info(@files_column_width, @size_column_width)
     end
+    LOG.debug report_string
     report_string
   end
 
