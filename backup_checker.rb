@@ -218,8 +218,9 @@ class BackupChecker
     LOG.debug "ini_contents = " << @ini_contents.to_s
 
     @server_name = @ini_contents['server_name']
+    @email_address = @ini_contents['email_address']
     @alert_message = @ini_contents['alert_message'].gsub!('[server_name]', @server_name)
-
+    @alert_message = @alert_message.gsub!("email_address", @email_address)
 
 
 
