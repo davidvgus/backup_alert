@@ -207,7 +207,7 @@ class BackupChecker
   require 'date'
 
 
-  attr_reader :ini_contents, :current_time, :set_manager, :backup_dir
+  attr_reader :ini_contents, :current_time, :set_manager, :backup_dir, :alert_message
 
   def initialize(current_time = nil)
 
@@ -216,6 +216,11 @@ class BackupChecker
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
     
     LOG.debug "ini_contents = " << @ini_contents.to_s
+
+    @server_name = @ini_contents['server_name']
+    @alert_message = @ini_contents['alert_message'].gsub!('[server_name]', @server_name)
+
+
 
 
     @files_column_width = @ini_contents['files_column_width'].to_i
@@ -322,6 +327,11 @@ MESSAGE_END
       smtp.send_message message, from,
                         to
     end
+
+    #Net::SMTP.start('mail.your-domain.com',
+    #                25,
+    #                'localhost',
+    #                'username', 'password' :plain)
   end
 end
 
