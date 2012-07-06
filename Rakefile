@@ -21,3 +21,11 @@ task :create_sample_files, :test_dir do |t, arg|
 
 end
 
+task :new_backup_set, :size do |t, arg|
+  ['A999.4BR', 'A999.4BK', 'A999.4BS'].each do  |filename|
+    File.open(File.join('sample', filename), 'w') do |f|
+      f.write("a" * arg[:size].to_i) unless filename == 'A999.4BR'
+    end
+  end
+end
+
