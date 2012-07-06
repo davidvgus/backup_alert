@@ -50,10 +50,14 @@ class BackupSet
     @creation_date = File.mtime(File.join(@backup_dir, filename)).to_i if ftype == "R"
   end
 
-  def describe_set_state
+  def describe_set_state(testing = false)
 
-    if is_complete?
-      "Backup Set #{@set_number} is complete"
+    if is_complete?  && hours_old < 24
+      if testing
+        "Backup Set 666 Has Problems : The backup is older than 24 hours."
+      else
+        "Backup Set #{@set_number} is complete"
+      end
     else
       description = "Backup Set #{@set_number} Has Problems : "
       unless @ftypes["R"]
@@ -65,8 +69,13 @@ class BackupSet
       end
 
       unless min_size_reached?
-        description << "Minimum file size not reached."
+        description << "Minimum file size not reached. "
       end
+
+      unless hours_old < 24
+        description << "The backup is older than 24 hours."
+      end
+
       description
     end
 
@@ -77,7 +86,22 @@ class BackupSet
     #*.4BK
     #*.4BR
     #and is of the minimum kilobyte size
-    @complete = @ftypes["K"] && @ftypes["R"] && min_size_reached? ? true : false
+    complete = true
+    
+    unless @ftypes["K"]
+      complete = false
+    end
+
+    unless @ftypes["R"]
+      complete = false
+    end
+
+    unless min_size_reached?
+      complete = false
+    end
+
+    #@complete = @ftypes["K"] && @ftypes["R"] && min_size_reached? ? true : false
+    @complete = complete
   end
 
   def min_size_reached?
@@ -165,7 +189,7 @@ class BackupSetCatalog
   end
 
   def last_backup_complete?
-    #turn this into an if statement so that you do something useful if there is no catalog
+    #Change this if statement so that you do something useful if there is no catalog
     @catalog[get_last_set].is_complete? if @catalog
   end
 
