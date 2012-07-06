@@ -1,3 +1,5 @@
+Don't use two different ini file readers.  I think I like the one for the mail config file better.
+
 Handle exceptions for file and directory reads
 
 Have the script create the ini and email config sample files.
