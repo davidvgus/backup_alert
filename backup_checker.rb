@@ -261,6 +261,7 @@ class BackupChecker
 
     report_string = ""
     # set first line to describe_set_state
+    report_string = @alert_message
     report_string << @set_manager.describe_last_set_state << "\n"
     report_string << "Age of set in hours: " << @set_manager.last_set_age_in_hours.to_s << "\n"
     report_string << "\n        LIST OF KNOWN BACKUP SETS        \n"
@@ -319,7 +320,6 @@ To: IT<#{to}>
 Subject:  SoC Backup Needs Attention
 Date: #{Time.now.rfc2822}
 
-Begin Report:
 MESSAGE_END
 
     message << report
