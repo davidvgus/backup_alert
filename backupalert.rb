@@ -4,11 +4,6 @@ require_relative 'backup_checker'
 require 'inifile'
 
 
-
-
-
-
-
 b = BackupChecker.new()
 mailer = EmailAlerter.new()
 
