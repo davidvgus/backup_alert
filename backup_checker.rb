@@ -236,7 +236,7 @@ class BackupChecker
 
   def initialize(current_time = nil)
 
-    LOG.level = Logger::DEBUG
+    LOG.level = Logger::INFO
 
     @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
     
@@ -292,8 +292,8 @@ class BackupChecker
     report_string << "\n        LIST OF KNOWN BACKUP SETS        \n"
     @set_manager.get_ordered_set_keys.each do |key|
       report_string << @set_manager.catalog[key].info(@files_column_width, @size_column_width)
+      LOG.info @set_manager.catalog[key].info(@files_column_width, @size_column_width)
     end
-    LOG.debug report_string
     report_string
   end
 
