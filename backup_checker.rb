@@ -47,7 +47,8 @@ class BackupSet
 
     @files << BackupFile.new(filename, size, ftype)
     @size += size
-    @creation_date = File.mtime(File.join(@backup_dir, filename)).to_i if ftype == "R"
+    @creation_date = File.mtime(File.absolute_path(File.join(@backup_dir, filename))).to_i if ftype == "K"
+    @creation_date = File.mtime(File.absolute_path(File.join(@backup_dir, filename))).to_i if ftype == "R"
   end
 
   def describe_set_state(testing = false)

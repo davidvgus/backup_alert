@@ -5,7 +5,7 @@ require 'minitest/autorun'
 class TestBackupSet < MiniTest::Unit::TestCase
   def setup
     require_relative '../backup_checker'
-    @backup_set = BackupSet.new('127', '../sample', 100)
+    @backup_set = BackupSet.new('127', 'sample', 100)
   end
 
   def test_backup_size_is_zero_before_adding_a_file
@@ -27,6 +27,7 @@ class TestBackupSet < MiniTest::Unit::TestCase
   end
 
   def test_add_file_with_param
+    @backup_set = BackupSet.new('666', 'sample', 100)
     @backup_set.add_file('test_file.txt', 100, "K")
     assert_equal "test_file.txt", @backup_set.files[0].name
     assert_equal 100, @backup_set.files[0].size
@@ -38,7 +39,7 @@ class TestBackupSet < MiniTest::Unit::TestCase
   end
 
   def test_is_complete_with_incomplete_info
-
+    @backup_set = BackupSet.new('666', 'sample', 100)
     @backup_set.add_file('test_file.txt', 10, "K")
     @backup_set.add_file('test_file2.txt', 10, "K")
     assert_equal false, @backup_set.is_complete?
@@ -59,7 +60,7 @@ class TestBackupSet < MiniTest::Unit::TestCase
 
   def test_get_creation_date_with_wrong_file_info
     @backup_set = BackupSet.new('666', 'sample', 100)
-    @backup_set.add_file('test_file2.txt', 50, "K")
+    @backup_set.add_file('test_file2.txt', 50, "S")
     refute_equal 1339306775, @backup_set.creation_date
   end
 
