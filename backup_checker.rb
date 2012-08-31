@@ -238,7 +238,7 @@ class BackupChecker
 
     LOG.level = Logger::INFO
 
-    @ini_contents = IniFile.new('backup_checker.ini').to_h['global']
+    @ini_contents = IniFile.new('backup_alert.ini').to_h['global']
     
     LOG.debug "ini_contents = " << @ini_contents.to_s
 
