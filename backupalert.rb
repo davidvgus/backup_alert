@@ -1,4 +1,4 @@
-#example.rb
+#backupalert.rb
 
 require_relative 'backup_checker'
 require 'inifile'
@@ -12,7 +12,7 @@ mailer = EmailAlerter.new()
 #puts "\n"
 #puts ini_contents = IniFile.new('backup_checker.ini').to_h['global']['email_config_file']
 #puts "\n"
-email_config = IniFile.new('backup_checker.ini').to_h['global']['email_config_file']
+email_config = IniFile.new('backup_alert.ini').to_h['global']['email_config_file']
 
 if b.set_manager.empty?
   report = "The Backup Directory (#{File.absolute_path(b.backup_dir)}) is empty of valid backup files."
